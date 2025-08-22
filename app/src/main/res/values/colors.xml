@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="BaseColor">#F5F5F5</color>
+    <color name="MainColor">#15B7B9</color>
+    <color name="SecondaryColor">#10DDC2</color>
+    <color name="AlertColor">#F57170</color>
+    <color name="TextColor">#303030</color>
+</resources>

@@ -7,7 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.fintrack.di.model.income.get.IncomeCategoryResponse
+import com.example.fintrack.di.model.Transaction.GetTransactionCategoryResponse
 import com.example.fintrack.presentation.main.MainScreen
 import com.example.fintrack.presentation.main.home.transaction.TransactionScreen
 import com.example.fintrack.presentation.main.home.transaction.TransactionViewModel
@@ -22,32 +22,49 @@ fun FintrackNavigator() {
     ) {
         composable(route = Route.MainScreen.route) {
             MainScreen(
-                navigateToTransaction = { incomeCategory ->
+                navigateToTransaction = { transactionCategory, selectedTab ->
                     navigateToTransaction(
                         navController = navController,
-                        incomeCategory = incomeCategory
+                        transactionCategory = transactionCategory,
+                        selectedTab = selectedTab,
                     )
                 }
             )
         }
-        composable (route = Route.TransactionScreen.route){
+        composable(route = Route.TransactionScreen.route) {
             val viewModel: TransactionViewModel = hiltViewModel()
-            navController.previousBackStackEntry?.savedStateHandle?.get<IncomeCategoryResponse>("IncomeCategoryResponse")?.let { incomeCategory ->
+            val transactionCategory =
+                navController.previousBackStackEntry?.savedStateHandle?.get<GetTransactionCategoryResponse>(
+                    "GetTransactionCategoryResponse"
+                )
+            val selectedTab =
+                navController.previousBackStackEntry?.savedStateHandle?.get<Int>("SelectedTab")
+            if (selectedTab != null && transactionCategory != null) {
                 TransactionScreen(
                     modifier = Modifier,
                     onEvent = viewModel::onEvent,
                     navigateToMain = {
                         navController.navigate(Route.MainScreen.route)
                     },
-                    incomeCategory = incomeCategory
+                    transactionCategory = transactionCategory,
+                    selectedTab = selectedTab,
                 )
             }
         }
     }
 }
 
-private fun navigateToTransaction(navController: NavController, incomeCategory: IncomeCategoryResponse){
-    navController.currentBackStackEntry?.savedStateHandle?.set("IncomeCategoryResponse", incomeCategory)
+
+private fun navigateToTransaction(
+    navController: NavController,
+    transactionCategory: GetTransactionCategoryResponse,
+    selectedTab: Int
+) {
+    navController.currentBackStackEntry?.savedStateHandle?.set(
+        "GetTransactionCategoryResponse",
+        transactionCategory
+    )
+    navController.currentBackStackEntry?.savedStateHandle?.set("SelectedTab", selectedTab)
     navController.navigate(
         route = Route.TransactionScreen.route
     )

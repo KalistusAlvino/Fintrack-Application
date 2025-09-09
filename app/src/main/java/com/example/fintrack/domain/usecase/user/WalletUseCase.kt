@@ -2,7 +2,6 @@ package com.example.fintrack.domain.usecase.user
 
 import com.example.fintrack.core.common.ResultState
 import com.example.fintrack.data.pref.UserPreference
-import com.example.fintrack.di.model.auth.ResendVerifiyResponse
 import com.example.fintrack.di.model.user.WalletResponse
 import com.example.fintrack.domain.di.user.WalletRepository
 import com.google.gson.Gson

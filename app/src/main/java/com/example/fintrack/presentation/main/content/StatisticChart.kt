@@ -9,28 +9,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import com.example.fintrack.di.model.Transaction.GetMonthlySummaryResponse
+import com.example.fintrack.ui.theme.AlertColor
 import com.example.fintrack.ui.theme.BaseColor
+import com.example.fintrack.ui.theme.MainColor
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.layout.fullWidth
 import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollState
-import com.patrykandpatrick.vico.compose.component.shape.shader.fromBrush
 import com.patrykandpatrick.vico.core.chart.layout.HorizontalLayout
 import com.patrykandpatrick.vico.core.chart.line.LineChart
-import com.patrykandpatrick.vico.core.component.shape.shader.DynamicShaders
 import com.patrykandpatrick.vico.core.entry.entryModelOf
+import com.patrykandpatrick.vico.core.entry.entryOf
 
 @Composable
-fun MoneyChart(
-    monthlySummary: List<GetMonthlySummaryResponse>,
-    chartColor: List<Color>
+fun StatisticChart(
+    monthlyIncome: List<GetMonthlySummaryResponse>,
+    monthlyExpenses: List<GetMonthlySummaryResponse>,
 ) {
-    val chartData = monthlySummary.map { (it.total / 1_000).toFloat() }.toTypedArray()
-    val chartEntryModel = entryModelOf(*chartData)
+// Buat entries dengan koordinat (x, y)
+    val incomeEntries = monthlyIncome.mapIndexed { index, it ->
+        entryOf(index.toFloat(), (it.total / 1_000f))
+    }
+    val expensesEntries = monthlyExpenses.mapIndexed { index, it ->
+        entryOf(index.toFloat(), (it.total / 1_000f))
+    }
+
+// Gabungkan jadi multi-line model
+    val chartEntryModel = entryModelOf(incomeEntries, expensesEntries)
+
     val scrollState = rememberChartScrollState()
 
     Box(
@@ -47,13 +55,12 @@ fun MoneyChart(
             chart = LineChart(
                 lines = listOf(
                     LineChart.LineSpec(
-                        lineColor = Color.Transparent.toArgb(),
-                        lineBackgroundShader = DynamicShaders.fromBrush(
-                            brush = Brush.verticalGradient(
-                                chartColor
-                            )
-                        )
-                    )
+                        lineColor = MainColor.toArgb(),
+
+                    ),
+                    LineChart.LineSpec(
+                        lineColor = AlertColor.toArgb(),
+                    ),
                 )
             ),
             model = chartEntryModel,
@@ -65,11 +72,3 @@ fun MoneyChart(
         )
     }
 }
-
-//@Preview
-//@Composable
-//private fun LineChartPreview() {
-//    FintrackTheme {
-//        MoneyChart()
-//    }
-//}

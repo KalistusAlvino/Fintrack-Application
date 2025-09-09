@@ -4,20 +4,19 @@ import com.example.fintrack.data.remote.dto.auth.LoginResponseDTO
 import com.example.fintrack.di.model.auth.RegisterResponse
 import com.example.fintrack.data.remote.dto.auth.RegisterResponseDTO
 import com.example.fintrack.data.remote.dto.auth.ResendVerifyResponseDTO
-import com.example.fintrack.data.remote.dto.income.get.DataIncomeCategoryDTO
-import com.example.fintrack.data.remote.dto.income.get.DataIncomeResponseDTO
-import com.example.fintrack.data.remote.dto.income.get.DataMonthlyIncomeDTO
-import com.example.fintrack.data.remote.dto.income.get.DataThisMonthIncomeDTO
-import com.example.fintrack.data.remote.dto.income.post.DataPostIncomeDTO
-import com.example.fintrack.data.remote.dto.income.post.PostIncomeDTO
+import com.example.fintrack.data.remote.dto.transaction.GetMonthlySummaryDTO
+import com.example.fintrack.data.remote.dto.transaction.GetThisMonthSummaryDTO
+import com.example.fintrack.data.remote.dto.transaction.GetTransactionCategoryDTO
+import com.example.fintrack.data.remote.dto.transaction.GetTransactionDTO
+import com.example.fintrack.data.remote.dto.transaction.PostTransactionDTO
 import com.example.fintrack.data.remote.dto.user.WalletResponseDTO
+import com.example.fintrack.di.model.Transaction.GetMonthlySummaryResponse
+import com.example.fintrack.di.model.Transaction.GetThisMonthSummaryResponse
+import com.example.fintrack.di.model.Transaction.GetTransactionCategoryResponse
+import com.example.fintrack.di.model.Transaction.GetTransactionResponse
+import com.example.fintrack.di.model.Transaction.PostTransactionResponse
 import com.example.fintrack.di.model.auth.LoginResponse
 import com.example.fintrack.di.model.auth.ResendVerifiyResponse
-import com.example.fintrack.di.model.income.get.IncomeCategoryResponse
-import com.example.fintrack.di.model.income.get.IncomeResponse
-import com.example.fintrack.di.model.income.get.MonthlyIncomeResponse
-import com.example.fintrack.di.model.income.get.ThisMonthIncomeResponse
-import com.example.fintrack.di.model.income.post.PostIncomeResponse
 import com.example.fintrack.di.model.user.WalletResponse
 
 fun RegisterResponseDTO.toRegisterResponse(): RegisterResponse {
@@ -56,8 +55,37 @@ fun WalletResponseDTO.toWalletResponse(): WalletResponse {
     )
 }
 
-fun DataIncomeResponseDTO.toIncomeResponse(): IncomeResponse {
-    return IncomeResponse(
+fun GetThisMonthSummaryDTO.toThisMonthIncomeResponse(): GetThisMonthSummaryResponse {
+    return GetThisMonthSummaryResponse(
+        amount = this.amount,
+        formattedAmount = this.formattedAmount
+    )
+}
+
+fun GetMonthlySummaryDTO.toMonthlySummaryResponse(): GetMonthlySummaryResponse {
+    return GetMonthlySummaryResponse(
+        monthName = this.monthName,
+        monthKey = this.monthKey,
+        total = this.total,
+        formattedTotal = this.formattedTotal,
+    )
+}
+
+fun PostTransactionDTO.toPostTransactionResponse(): PostTransactionResponse {
+    return PostTransactionResponse(
+        walletId = this.walletId,
+        categoryId = this.categoryId,
+        description = this.description,
+        date = this.date,
+        amount = this.amount,
+        updatedAt = this.updatedAt,
+        createdAt = this.createdAt,
+        id = this.id
+    )
+}
+
+fun GetTransactionDTO.toTransactionResponse(): GetTransactionResponse {
+    return GetTransactionResponse(
         id = this.id,
         name = this.name,
         images = this.images,
@@ -68,41 +96,10 @@ fun DataIncomeResponseDTO.toIncomeResponse(): IncomeResponse {
     )
 }
 
-fun DataThisMonthIncomeDTO.toThisMonthIncomeResponse(): ThisMonthIncomeResponse {
-    return ThisMonthIncomeResponse(
-        amount = this.amount,
-        formattedAmount = this.formattedAmount
-    )
-}
-
-fun DataMonthlyIncomeDTO.toMonthlyIncomeResponse(): MonthlyIncomeResponse {
-    return MonthlyIncomeResponse(
-        monthName = this.monthName,
-        monthKey = this.monthKey,
-        totalIncome = this.totalIncome,
-        formattedIncome = this.formattedIncome,
-    )
-}
-
-fun DataIncomeCategoryDTO.toIncomeCategoryResponse(): IncomeCategoryResponse {
-    return IncomeCategoryResponse(
+fun GetTransactionCategoryDTO.toTransactionCategoryResponse(): GetTransactionCategoryResponse {
+    return GetTransactionCategoryResponse(
         id = this.id,
         name = this.name,
         imageUrl = this.imageUrl
-    )
-}
-
-fun PostIncomeDTO.toPostIncomeResponse(): PostIncomeResponse {
-    return PostIncomeResponse(
-        success = this.success ?: false,
-        message = this.message.toString(),
-        walletId = this.data?.walletId,
-        categoryId = this.data?.categoryId,
-        description = this.data?.description,
-        date = this.data?.date,
-        amount = this.data?.amount,
-        updatedAt = this.data?.updatedAt,
-        createdAt = this.data?.createdAt,
-        id = this.data?.id
     )
 }

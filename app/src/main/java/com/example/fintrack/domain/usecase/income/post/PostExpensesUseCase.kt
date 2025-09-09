@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.flowOn
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class PostIncomeUseCase @Inject constructor(
+class PostExpensesUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository
 ) {
     operator fun invoke(
@@ -22,7 +22,7 @@ class PostIncomeUseCase @Inject constructor(
     ): Flow<ResultState<PostTransactionResponse>> = flow {
         emit(ResultState.Loading())
         try {
-            val result = transactionRepository.postIncome(categoryId, amount, description)
+            val result = transactionRepository.postExpenses(categoryId, amount, description)
             emit(ResultState.Success(data = result))
         } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()

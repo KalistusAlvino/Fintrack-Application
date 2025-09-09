@@ -39,8 +39,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -58,9 +56,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.fintrack.R
-import com.example.fintrack.di.model.income.get.IncomeCategoryResponse
+import com.example.fintrack.di.model.Transaction.GetTransactionCategoryResponse
 import com.example.fintrack.presentation.main.content.CategoryList
-import com.example.fintrack.presentation.main.home.HomeViewModel
 import com.example.fintrack.ui.component.Loading
 import com.example.fintrack.ui.theme.BaseColor
 import com.example.fintrack.ui.theme.BlurDark
@@ -74,16 +71,17 @@ fun TransactionScreen(
     modifier: Modifier = Modifier,
     onEvent: (TransactionEvent) -> Unit,
     navigateToMain: () -> Unit,
-    incomeCategory: IncomeCategoryResponse
+    transactionCategory: GetTransactionCategoryResponse,
+    selectedTab: Int
 ) {
-    var selectedCategory by rememberSaveable { mutableStateOf(incomeCategory) } // state
+    var selectedCategory by rememberSaveable { mutableStateOf(transactionCategory) } // state
     //ViewModel
     //Category
-    val viewModel: HomeViewModel = hiltViewModel()
-    val incomeCategoryResult = viewModel.incomeState.value
-    //transaction
     val transactionViewModel: TransactionViewModel = hiltViewModel()
-    val result = transactionViewModel.transactionState.value
+    val incomeCategoryResult = transactionViewModel.transactionState.value.incomeCategory
+    val expensesCategoryResult = transactionViewModel.transactionState.value.expensesCategory
+    //transaction
+    val postResult = transactionViewModel.transactionState.value
 
     //Input value
     var description by rememberSaveable { mutableStateOf("") }
@@ -103,7 +101,7 @@ fun TransactionScreen(
                     ) {
                         IconButton(
                             onClick = {
-                                navigateToMain
+                                navigateToMain()
                             },
                             modifier = Modifier
                                 .border(
@@ -121,7 +119,7 @@ fun TransactionScreen(
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Text(
-                            text = "Add Transaction",
+                            text = if (selectedTab == 0) "Add Income Transaction" else "Add Expenses Transaction",
                             fontFamily = FontFamily(Font(R.font.urbanist_bold)),
                             fontSize = 16.sp,
                             color = TextColor
@@ -208,10 +206,11 @@ fun TransactionScreen(
                         .defaultMinSize(minHeight = 56.dp), // Minimum height, bisa expand
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    Row (
-                        modifier = Modifier.fillMaxWidth()
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .padding(vertical = 8.dp)
-                    ){
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Description,
                             contentDescription = "Description",
@@ -286,16 +285,32 @@ fun TransactionScreen(
                     )
                 }
                 Box(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .padding(horizontal = 24.dp, vertical = 24.dp),
                     contentAlignment = Alignment.BottomCenter
-                ){
+                ) {
                     Button(
                         onClick = {
-                            onEvent(TransactionEvent.postIncome(incomeCategory.id, amountLong, description))
+                            onEvent(
+                                if (selectedTab == 0) {
+                                    TransactionEvent.PostIncome(
+                                        transactionCategory.id,
+                                        amountLong,
+                                        description
+                                    )
+                                } else {
+                                    TransactionEvent.PostExpenses(
+                                        transactionCategory.id,
+                                        amountLong,
+                                        description
+                                    )
+                                }
+                            )
                         },
                         enabled = isFilled,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
                             .size(56.dp),
                         shape = RoundedCornerShape(16.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -336,15 +351,24 @@ fun TransactionScreen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                         ) {
-                            incomeCategoryResult.incomeCategory?.let {
-                                it.forEach { incomeCategory ->
-                                    CategoryList(
-                                        incomeCategory = incomeCategory,
-                                        onClick = {
-                                            selectedCategory = incomeCategory
-                                            showBottomSheet = false
-                                        }
-                                    )
+                            when (selectedTab) {
+                                0 -> {
+                                    incomeCategoryResult?.forEach { incomeCategory ->
+                                        CategoryList(
+                                            transactionCategory = incomeCategory,
+                                            onClick = { selectedCategory = incomeCategory },
+                                        )
+                                    }
+                                }
+                                1 -> {
+                                    expensesCategoryResult?.forEach { expensesCategory ->
+                                        CategoryList(
+                                            transactionCategory = expensesCategory,
+                                            onClick = {
+                                                selectedCategory = expensesCategory
+                                            }
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -352,17 +376,24 @@ fun TransactionScreen(
                 }
             }
         }
-        result.data?.let {
-            if (result.success) {
+        when {
+            postResult.postIncome != null && selectedTab == 0 -> {
+                // Handler ketika income berhasil dipost
+                navigateToMain()
+            }
+
+            postResult.postExpenses != null && selectedTab == 1 -> {
+                // Handler ketika expenses berhasil dipost
                 navigateToMain()
             }
         }
-        if (result.isLoading) {
+
+        if (transactionViewModel.transactionState.value.isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(color = BlurDark)
-                    .clickable { /* Prevent clicks */ },
+                    .clickable(enabled = false) { },
                 contentAlignment = Alignment.Center
             ) {
                 Loading()

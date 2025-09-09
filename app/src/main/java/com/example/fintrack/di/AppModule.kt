@@ -9,12 +9,12 @@ import com.example.fintrack.data.remote.FintrackApi
 import com.example.fintrack.di.repository.auth.AuthRepositoryImpl
 import com.example.fintrack.di.repository.auth.LoginRepositoryImpl
 import com.example.fintrack.di.repository.auth.ResendVerifyRepositoryImpl
-import com.example.fintrack.di.repository.income.IncomeRepositoryImpl
+import com.example.fintrack.di.repository.transaction.TransactionRepositoryImpl
 import com.example.fintrack.di.repository.user.WalletRepositoryImpl
 import com.example.fintrack.domain.di.auth.AuthRepository
 import com.example.fintrack.domain.di.auth.LoginRepository
 import com.example.fintrack.domain.di.auth.ResendVerifyRepository
-import com.example.fintrack.domain.di.income.IncomeRepository
+import com.example.fintrack.domain.di.transaction.TransactionRepository
 import com.example.fintrack.domain.di.user.WalletRepository
 import com.example.fintrack.domain.manger.LocalUserManger
 import com.example.fintrack.domain.usecase.appentry.AppEntryUseCases
@@ -25,7 +25,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -105,8 +104,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideIncomeRepositoryImpl(fintrackApi: FintrackApi): IncomeRepository {
-        return IncomeRepositoryImpl(fintrackApi)
+    fun provideTransactionRepositoryImpl(fintrackApi: FintrackApi): TransactionRepository {
+        return TransactionRepositoryImpl(fintrackApi)
     }
 
 

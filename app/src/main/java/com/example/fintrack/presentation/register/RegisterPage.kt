@@ -1,11 +1,13 @@
 package com.example.fintrack.presentation.register
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -24,12 +26,17 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -58,6 +66,8 @@ import com.example.fintrack.ui.theme.BaseColor
 import com.example.fintrack.ui.theme.BlurDark
 import com.example.fintrack.ui.theme.MainColor
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterPage(
     onEvent: (RegisterEvent) -> Unit,
@@ -76,211 +86,232 @@ fun RegisterPage(
     val focusRequesterPassword = remember { FocusRequester() }
     val focusRequesterConfirmPassword = remember { FocusRequester() }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ){
-        LazyColumn(
+
+    Scaffold (){ contentPadding ->
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MainColor),
-            contentPadding = PaddingValues(bottom = 56.dp), // ruang untuk bottom content
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(contentPadding)
         ) {
-            item {
-                ElevatedCard(
-                    shape = RoundedCornerShape(bottomEnd = 24.dp, bottomStart = 24.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                    colors = CardDefaults.cardColors(containerColor = BaseColor),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Column(
+            val screenHeight = maxHeight
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MainColor),
+                contentPadding = PaddingValues(bottom = 56.dp), // ruang untuk bottom content
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                item {
+                    ElevatedCard(
+                        shape = RoundedCornerShape(bottomEnd = 24.dp, bottomStart = 24.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                        colors = CardDefaults.cardColors(containerColor = BaseColor),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .height(screenHeight * 0.5f)
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.register_asset),
-                            contentDescription = "Landing page image",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .padding(horizontal = 16.dp),
-                            contentScale = ContentScale.Fit
-                        )
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 32.dp, vertical = 16.dp),
+                                .padding(vertical = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = "Join Fintrack!",
-                                color = MainColor,
-                                fontSize = 24.sp,
-                                fontFamily = FontFamily(Font(R.font.poppins_bold)),
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                text = "Start your journey to smarter spending and better saving. Sign up now!",
-                                modifier = Modifier.padding(top = 8.dp),
-                                color = MainColor,
-                                fontSize = 12.sp,
-                                fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                                textAlign = TextAlign.Center,
-                                lineHeight = 16.sp
-                            )
-                        }
-                    }
-                }
-            }
-
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    TextField(
-                        label = "Username",
-                        value = username,
-                        onValueChange = { username = it },
-                        leadingIcon = Icons.Default.Person,
-                        placeholder = "Enter your username",
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next,
-                            autoCorrectEnabled = true
-                        ),
-                        textStyle = TextStyle(
-                            fontSize = 14.sp,
-                            color = BaseColor
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { focusRequesterEmail.requestFocus() }
-                        ),
-                    )
-                    TextField(
-                        modifier = Modifier.focusRequester(focusRequesterEmail),
-                        label = "Email",
-                        value = email,
-                        onValueChange = { email = it },
-                        leadingIcon = Icons.Default.Email,
-                        placeholder = "Enter your Email",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Email,
-                            imeAction = ImeAction.Next,
-                            autoCorrectEnabled = false
-                        ),
-                        textStyle = TextStyle(
-                            fontSize = 14.sp,
-                            color = BaseColor
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { focusRequesterPassword.requestFocus() }
-                        )
-                    )
-                    PasswordTextField(
-                        label = "Password",
-                        modifier = Modifier.focusRequester(focusRequesterPassword),
-                        value = password,
-                        onValueChange = { password = it },
-                        leadingIcon = Icons.Default.Lock,
-                        placeholder = "Enter your password",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Next,
-                            autoCorrectEnabled = false
-                        ),
-                        textStyle = TextStyle(
-                            fontSize = 14.sp,
-                            color = BaseColor
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { focusRequesterConfirmPassword.requestFocus() }
-                        )
-                    )
-                    PasswordTextField(
-                        label = "Confirm password",
-                        modifier = Modifier.focusRequester(focusRequesterConfirmPassword),
-                        value = confirmPassword,
-                        onValueChange = { confirmPassword = it },
-                        leadingIcon = Icons.Default.Lock,
-                        placeholder = "Enter your confirm password",
-                        textStyle = TextStyle(
-                            fontSize = 14.sp,
-                            color = BaseColor
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Done,
-                            autoCorrectEnabled = false
-                        )
-                    )
-                    OutlinedButton(
-                        onClick = {
-                            onEvent(RegisterEvent.Register(username,email,password,confirmPassword))
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .padding(top = 24.dp)
-                            .fillMaxWidth()
-                            .height(52.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Box(
+                            Image(
+                                painter = painterResource(id = R.drawable.register_asset),
+                                contentDescription = "Landing page image",
                                 modifier = Modifier
-                                    .size(24.dp)
-                                    .background(BaseColor, CircleShape),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .padding(horizontal = 16.dp),
+                                contentScale = ContentScale.Fit
+                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 32.dp, vertical = 16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowRight,
-                                    contentDescription = "User Icon",
-                                    tint = MainColor,
-                                    modifier = Modifier.size(18.dp)
+                                Text(
+                                    text = "Join Fintrack!",
+                                    color = MainColor,
+                                    fontSize = 24.sp,
+                                    fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(
+                                    text = "Start your journey to smarter spending and better saving. Sign up now!",
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    color = MainColor,
+                                    fontSize = 12.sp,
+                                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                                    textAlign = TextAlign.Center,
+                                    lineHeight = 16.sp
                                 )
                             }
-                            Text(
-                                text = "Sign Up",
-                                color = BaseColor,
-                                fontSize = 16.sp,
-                                fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
                         }
                     }
                 }
-            }
-            item {
-                Row (
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ){
-                    Text(
-                        text = "Already have an account?",
-                        color = BaseColor,
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily(Font(R.font.poppins_regular))
-                    )
-                    TextButton(
-                        modifier = Modifier.padding(start = 0.dp),
-                        onClick = {
-                            navigateToLogin()
-                        }
+
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
                     ) {
+                        Box (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(28.dp),
+                            contentAlignment = Alignment.Center
+                        ){
+                            if (result.success == false) {
+                                Text(
+                                    text = result.message.toString(),
+                                    fontSize = 14.sp,
+                                    color = Color.Red,
+                                    fontFamily = FontFamily(Font(R.font.inter_medium_24pt)),
+                                )
+                            }
+                        }
+                        TextField(
+                            label = "Username",
+                            value = username,
+                            onValueChange = { username = it },
+                            leadingIcon = Icons.Default.Person,
+                            placeholder = "Enter your username",
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Next,
+                                autoCorrectEnabled = true
+                            ),
+                            textStyle = TextStyle(
+                                fontSize = 14.sp,
+                                color = BaseColor
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { focusRequesterEmail.requestFocus() }
+                            ),
+                        )
+                        TextField(
+                            modifier = Modifier.focusRequester(focusRequesterEmail),
+                            label = "Email",
+                            value = email,
+                            onValueChange = { email = it },
+                            leadingIcon = Icons.Default.Email,
+                            placeholder = "Enter your Email",
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Email,
+                                imeAction = ImeAction.Next,
+                                autoCorrectEnabled = false
+                            ),
+                            textStyle = TextStyle(
+                                fontSize = 14.sp,
+                                color = BaseColor
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { focusRequesterPassword.requestFocus() }
+                            )
+                        )
+                        PasswordTextField(
+                            label = "Password",
+                            modifier = Modifier.focusRequester(focusRequesterPassword),
+                            value = password,
+                            onValueChange = { password = it },
+                            leadingIcon = Icons.Default.Lock,
+                            placeholder = "Enter your password",
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Next,
+                                autoCorrectEnabled = false
+                            ),
+                            textStyle = TextStyle(
+                                fontSize = 14.sp,
+                                color = BaseColor
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { focusRequesterConfirmPassword.requestFocus() }
+                            )
+                        )
+                        PasswordTextField(
+                            label = "Confirm password",
+                            modifier = Modifier.focusRequester(focusRequesterConfirmPassword),
+                            value = confirmPassword,
+                            onValueChange = { confirmPassword = it },
+                            leadingIcon = Icons.Default.Lock,
+                            placeholder = "Enter your confirm password",
+                            textStyle = TextStyle(
+                                fontSize = 14.sp,
+                                color = BaseColor
+                            ),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Done,
+                                autoCorrectEnabled = false
+                            )
+                        )
+                        OutlinedButton(
+                            onClick = {
+                                onEvent(RegisterEvent.Register(username,email,password,confirmPassword))
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .padding(top = 24.dp)
+                                .fillMaxWidth()
+                                .height(52.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .background(BaseColor, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.KeyboardArrowRight,
+                                        contentDescription = "User Icon",
+                                        tint = MainColor,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                Text(
+                                    text = "Sign Up",
+                                    color = BaseColor,
+                                    fontSize = 16.sp,
+                                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                item {
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ){
                         Text(
-                            text = "Sign In",
+                            text = "Already have an account?",
                             color = BaseColor,
                             fontSize = 12.sp,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                            fontFamily = FontFamily(Font(R.font.poppins_regular))
                         )
+                        TextButton(
+                            modifier = Modifier.padding(start = 0.dp),
+                            onClick = {
+                                navigateToLogin()
+                            }
+                        ) {
+                            Text(
+                                text = "Sign In",
+                                color = BaseColor,
+                                fontSize = 12.sp,
+                                fontFamily = FontFamily(Font(R.font.poppins_bold))
+                            )
+                        }
                     }
                 }
             }

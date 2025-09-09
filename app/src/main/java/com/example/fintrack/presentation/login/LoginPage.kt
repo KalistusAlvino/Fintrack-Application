@@ -1,11 +1,13 @@
 package com.example.fintrack.presentation.login
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,12 +25,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,12 +62,15 @@ import com.example.fintrack.R
 import com.example.fintrack.ui.component.Loading
 import com.example.fintrack.ui.component.PasswordTextField
 import com.example.fintrack.ui.component.TextField
+import com.example.fintrack.ui.theme.AlertColor
 import com.example.fintrack.ui.theme.BaseColor
 import com.example.fintrack.ui.theme.BlurDark
 import com.example.fintrack.ui.theme.FintrackTheme
 import com.example.fintrack.ui.theme.MainColor
 
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginPage(
     onEvent: (LoginEvent) -> Unit,
@@ -77,179 +87,198 @@ fun LoginPage(
 
     val isFilled = username.isNotBlank() && password.isNotBlank()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        LazyColumn(
+    Scaffold() { contentPadding ->
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MainColor),
-            contentPadding = PaddingValues(bottom = 56.dp), // ruang untuk bottom content
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(contentPadding)
         ) {
-            item {
-                ElevatedCard(
-                    shape = RoundedCornerShape(bottomEnd = 24.dp, bottomStart = 24.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                    colors = CardDefaults.cardColors(containerColor = BaseColor),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Column(
+            val screenHeight = maxHeight
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MainColor),
+                contentPadding = PaddingValues(bottom = 56.dp), // ruang untuk bottom content
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item {
+                    ElevatedCard(
+                        shape = RoundedCornerShape(bottomEnd = 24.dp, bottomStart = 24.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                        colors = CardDefaults.cardColors(containerColor = BaseColor),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .height(screenHeight * 0.5f)
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.login_asset),
-                            contentDescription = "Landing page image",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .padding(horizontal = 16.dp),
-                            contentScale = ContentScale.Fit
-                        )
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 32.dp, vertical = 16.dp),
+                                .padding(vertical = 16.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = "Welcome Back to Fintrack!",
-                                color = MainColor,
-                                fontSize = 24.sp,
-                                fontFamily = FontFamily(Font(R.font.poppins_bold)),
-                                textAlign = TextAlign.Center
-                            )
-                            Text(
-                                text = "Track your expenses, save smarter, and stay on top of your financial goals",
-                                modifier = Modifier.padding(top = 8.dp),
-                                color = MainColor,
-                                fontSize = 12.sp,
-                                fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                                textAlign = TextAlign.Center,
-                                lineHeight = 16.sp
-                            )
-                        }
-                    }
-                }
-            }
-
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    TextField(
-                        label = "Username",
-                        value = username,
-                        onValueChange = { username = it },
-                        leadingIcon = Icons.Default.Person,
-                        placeholder = "Enter your username",
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next,
-                            autoCorrectEnabled = true
-                        ),
-                        textStyle = TextStyle(
-                            fontSize = 14.sp,
-                            color = BaseColor
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { focusRequesterPassword.requestFocus() }
-                        ),
-                    )
-                    PasswordTextField(
-                        label = "Password",
-                        modifier = Modifier.focusRequester(focusRequesterPassword),
-                        value = password,
-                        onValueChange = { password = it },
-                        leadingIcon = Icons.Default.Lock,
-                        placeholder = "Enter your password",
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Password,
-                            imeAction = ImeAction.Next,
-                            autoCorrectEnabled = false
-                        ),
-                        textStyle = TextStyle(
-                            fontSize = 14.sp,
-                            color = BaseColor
-                        ),
-                        keyboardActions = KeyboardActions(
-                            onNext = { }
-                        )
-                    )
-                    OutlinedButton(
-                        onClick = {
-                            onEvent(LoginEvent.Login(username, password))
-                        },
-                        enabled = isFilled,
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .padding(top = 24.dp)
-                            .fillMaxWidth()
-                            .height(52.dp),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = if (isFilled) BaseColor else Color.Gray
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Box(
+                            Image(
+                                painter = painterResource(id = R.drawable.login_asset),
+                                contentDescription = "Landing page image",
                                 modifier = Modifier
-                                    .size(24.dp)
-                                    .background(BaseColor, CircleShape),
-                                contentAlignment = Alignment.Center
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .padding(horizontal = 16.dp),
+                                contentScale = ContentScale.Fit
+                            )
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 32.dp, vertical = 16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Icon(
-                                    imageVector = Icons.Filled.KeyboardArrowRight,
-                                    contentDescription = "User Icon",
-                                    tint = MainColor,
-                                    modifier = Modifier.size(18.dp)
+                                Text(
+                                    text = "Welcome Back to Fintrack!",
+                                    color = MainColor,
+                                    fontSize = 24.sp,
+                                    fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                                    textAlign = TextAlign.Center
+                                )
+                                Text(
+                                    text = "Track your expenses, save smarter, and stay on top of your financial goals",
+                                    modifier = Modifier.padding(top = 8.dp),
+                                    color = MainColor,
+                                    fontSize = 12.sp,
+                                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                                    textAlign = TextAlign.Center,
+                                    lineHeight = 16.sp
                                 )
                             }
-                            Text(
-                                text = "Sign In",
-                                color = BaseColor,
-                                fontSize = 16.sp,
-                                fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                                modifier = Modifier.padding(start = 8.dp)
-                            )
                         }
                     }
                 }
-            }
-            item {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = "Didn't have an account?",
-                        color = BaseColor,
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily(Font(R.font.poppins_regular))
-                    )
-                    TextButton(
-                        modifier = Modifier.padding(start = 0.dp),
-                        onClick = {
-                            navigateToRegister()
+                item {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Box (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(28.dp),
+                            contentAlignment = Alignment.Center
+                        ){
+                            if (result.success == false) {
+                                Text(
+                                    text = result.message.toString(),
+                                    fontSize = 14.sp,
+                                    color = Color.Red,
+                                    fontFamily = FontFamily(Font(R.font.inter_medium_24pt)),
+                                )
+                            }
                         }
+                        TextField(
+                            label = "Username",
+                            value = username,
+                            onValueChange = { username = it },
+                            leadingIcon = Icons.Default.Person,
+                            placeholder = "Enter your username",
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Next,
+                                autoCorrectEnabled = true
+                            ),
+                            textStyle = TextStyle(
+                                fontSize = 14.sp,
+                                color = BaseColor
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { focusRequesterPassword.requestFocus() }
+                            ),
+                        )
+                        PasswordTextField(
+                            label = "Password",
+                            modifier = Modifier.focusRequester(focusRequesterPassword),
+                            value = password,
+                            onValueChange = { password = it },
+                            leadingIcon = Icons.Default.Lock,
+                            placeholder = "Enter your password",
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Next,
+                                autoCorrectEnabled = false
+                            ),
+                            textStyle = TextStyle(
+                                fontSize = 14.sp,
+                                color = BaseColor
+                            ),
+                            keyboardActions = KeyboardActions(
+                                onNext = { }
+                            )
+                        )
+                        OutlinedButton(
+                            onClick = {
+                                onEvent(LoginEvent.Login(username, password))
+                            },
+                            enabled = isFilled,
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier
+                                .padding(top = 24.dp)
+                                .fillMaxWidth()
+                                .height(52.dp),
+                            border = BorderStroke(
+                                width = 1.dp,
+                                color = if (isFilled) BaseColor else Color.Gray
+                            )
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .background(BaseColor, CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.KeyboardArrowRight,
+                                        contentDescription = "User Icon",
+                                        tint = MainColor,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                Text(
+                                    text = "Sign In",
+                                    color = BaseColor,
+                                    fontSize = 16.sp,
+                                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                                    modifier = Modifier.padding(start = 8.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Sign Up",
+                            text = "Didn't have an account?",
                             color = BaseColor,
                             fontSize = 12.sp,
-                            fontFamily = FontFamily(Font(R.font.poppins_bold))
+                            fontFamily = FontFamily(Font(R.font.poppins_regular))
                         )
+                        TextButton(
+                            modifier = Modifier.padding(start = 0.dp),
+                            onClick = {
+                                navigateToRegister()
+                            }
+                        ) {
+                            Text(
+                                text = "Sign Up",
+                                color = BaseColor,
+                                fontSize = 12.sp,
+                                fontFamily = FontFamily(Font(R.font.poppins_bold))
+                            )
+                        }
                     }
                 }
             }

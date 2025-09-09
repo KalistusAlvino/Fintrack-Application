@@ -23,12 +23,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.fintrack.R
-import com.example.fintrack.di.model.income.get.IncomeCategoryResponse
+import com.example.fintrack.di.model.Transaction.GetTransactionCategoryResponse
 
 @Composable
 fun CategoryList(
-    incomeCategory: IncomeCategoryResponse,
-    onClick:(IncomeCategoryResponse) -> Unit
+    transactionCategory: GetTransactionCategoryResponse,
+    onClick:(GetTransactionCategoryResponse) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -43,20 +43,20 @@ fun CategoryList(
                 )
             }
             .clickable {
-                onClick(incomeCategory)
+                onClick(transactionCategory)
             }
             .padding(16.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         AsyncImage(
-            model = incomeCategory.imageUrl,
+            model = transactionCategory.imageUrl,
             contentDescription = "Income category",
             modifier = Modifier.size(18.dp)
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(
-            text = incomeCategory.name,
+            text = transactionCategory.name,
             fontSize = 14.sp,
             fontFamily = FontFamily(Font(R.font.urbanist_semibold)),
             modifier = Modifier.weight(1f),

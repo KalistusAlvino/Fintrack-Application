@@ -9,6 +9,7 @@ import com.example.fintrack.data.remote.dto.transaction.GetThisMonthSummaryDTO
 import com.example.fintrack.data.remote.dto.transaction.GetTransactionCategoryDTO
 import com.example.fintrack.data.remote.dto.transaction.GetTransactionDTO
 import com.example.fintrack.data.remote.dto.transaction.PostTransactionDTO
+import com.example.fintrack.data.remote.dto.user.ProfileResponseDTO
 import com.example.fintrack.data.remote.dto.user.WalletResponseDTO
 import com.example.fintrack.di.model.Transaction.GetMonthlySummaryResponse
 import com.example.fintrack.di.model.Transaction.GetThisMonthSummaryResponse
@@ -17,6 +18,7 @@ import com.example.fintrack.di.model.Transaction.GetTransactionResponse
 import com.example.fintrack.di.model.Transaction.PostTransactionResponse
 import com.example.fintrack.di.model.auth.LoginResponse
 import com.example.fintrack.di.model.auth.ResendVerifiyResponse
+import com.example.fintrack.di.model.user.ProfileResponse
 import com.example.fintrack.di.model.user.WalletResponse
 
 fun RegisterResponseDTO.toRegisterResponse(): RegisterResponse {
@@ -101,5 +103,12 @@ fun GetTransactionCategoryDTO.toTransactionCategoryResponse(): GetTransactionCat
         id = this.id,
         name = this.name,
         imageUrl = this.imageUrl
+    )
+}
+
+fun ProfileResponseDTO.toProfileResponse(): ProfileResponse {
+    return ProfileResponse(
+        username = username,
+        email = email
     )
 }

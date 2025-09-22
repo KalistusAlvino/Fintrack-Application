@@ -26,5 +26,9 @@ sealed class Route(
 
     object FintrackNavigationScreen : Route(route = "fintrackNavigationScreen")
 
+    object SuccessTransactionNavigationScreen : Route(route = "successTransactionScreen")
+
+    object AllTransactionNavigationScreen : Route(route = "allTransactionScreen")
+
     object MainScreen: Route(route = "mainScreen")
 }

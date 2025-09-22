@@ -1,4 +1,4 @@
-package com.example.fintrack.domain.usecase.register
+package com.example.fintrack.domain.usecase.auth
 
 import com.example.fintrack.core.common.ResultState
 import com.example.fintrack.di.model.auth.RegisterResponse
@@ -24,7 +24,7 @@ class RegisterUseCase @Inject constructor(
         try {
             val result = authRepository.register(username, email, password, confirmPassword)
             emit(ResultState.Success(data = result))
-        } catch  (e : HttpException){
+        } catch (e: HttpException) {
             val errorBody = e.response()?.errorBody()?.string()
             val errorResponse = Gson().fromJson(errorBody, RegisterResponse::class.java)
             emit(ResultState.Error(message = errorResponse.message))

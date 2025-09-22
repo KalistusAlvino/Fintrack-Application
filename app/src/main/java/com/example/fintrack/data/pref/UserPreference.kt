@@ -47,7 +47,6 @@ class UserPreference @Inject constructor(
 
     suspend fun logout() {
         dataStore.edit { preferences ->
-            Log.d("UserPreference", "Token = ${TOKEN_KEY}")
             preferences.clear()
         }
     }

@@ -12,4 +12,8 @@ sealed class TransactionEvent {
         val amount: Long,
         val description: String
     ): TransactionEvent()
+
+    object AllIncomes: TransactionEvent()
+
+    object AllExpenses: TransactionEvent()
 }

@@ -9,11 +9,14 @@ import com.example.fintrack.data.remote.dto.transaction.GetThisMonthSummaryDTO
 import com.example.fintrack.data.remote.dto.transaction.GetTransactionCategoryDTO
 import com.example.fintrack.data.remote.dto.transaction.GetTransactionDTO
 import com.example.fintrack.data.remote.dto.transaction.PostTransactionDTO
+import com.example.fintrack.data.remote.dto.user.ProfileResponseDTO
 import com.example.fintrack.data.remote.dto.user.WalletResponseDTO
+import com.example.fintrack.di.model.Transaction.GetTransactionResponse
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface FintrackApi {
     @FormUrlEncoded
@@ -81,4 +84,21 @@ interface FintrackApi {
 
     @GET("wallet/expenses-category")
     suspend fun getExpensesCategory(): BaseResponse<List<GetTransactionCategoryDTO>>
+
+    //All Transaction
+    @GET("wallet/all-expenses")
+    suspend fun getAllExpenses(
+        @Query("page") pageNumber: Int
+    ): BaseResponse<List<GetTransactionDTO>>
+
+    @GET("wallet/all-income")
+    suspend fun getAllIncome(
+        @Query("page") pageNumber: Int
+    ): BaseResponse<List<GetTransactionDTO>>
+
+    @GET("profile")
+    suspend fun getProfile(): BaseResponse<ProfileResponseDTO>
+
+    @POST("logout")
+    suspend fun logout(): BaseResponse<Nothing>
 }

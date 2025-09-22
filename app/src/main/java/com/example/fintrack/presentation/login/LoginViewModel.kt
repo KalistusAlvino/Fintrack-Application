@@ -1,12 +1,11 @@
 package com.example.fintrack.presentation.login
 
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.fintrack.core.common.ResultState
-import com.example.fintrack.domain.usecase.login.LoginUseCase
+import com.example.fintrack.domain.usecase.auth.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

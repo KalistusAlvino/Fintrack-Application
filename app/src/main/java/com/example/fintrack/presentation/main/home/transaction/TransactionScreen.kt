@@ -71,6 +71,7 @@ fun TransactionScreen(
     modifier: Modifier = Modifier,
     onEvent: (TransactionEvent) -> Unit,
     navigateToMain: () -> Unit,
+    navigateToSuccessTransaction: () -> Unit,
     transactionCategory: GetTransactionCategoryResponse,
     selectedTab: Int
 ) {
@@ -379,12 +380,12 @@ fun TransactionScreen(
         when {
             postResult.postIncome != null && selectedTab == 0 -> {
                 // Handler ketika income berhasil dipost
-                navigateToMain()
+                navigateToSuccessTransaction()
             }
 
             postResult.postExpenses != null && selectedTab == 1 -> {
                 // Handler ketika expenses berhasil dipost
-                navigateToMain()
+                navigateToSuccessTransaction()
             }
         }
 

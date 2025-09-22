@@ -1,4 +1,4 @@
-package com.example.fintrack.domain.usecase.login
+package com.example.fintrack.domain.usecase.auth
 
 import com.example.fintrack.core.common.ResultState
 import com.example.fintrack.di.model.auth.LoginResponse

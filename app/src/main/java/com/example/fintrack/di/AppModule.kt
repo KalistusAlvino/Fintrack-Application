@@ -2,6 +2,8 @@ package com.example.fintrack.di
 
 import android.app.Application
 import com.airbnb.lottie.BuildConfig
+import com.example.fintrack.data.datasource.TransactionRemoteDataSource
+import com.example.fintrack.data.datasource.TransactionRemoteDataSourceImpl
 import com.example.fintrack.data.manger.LocalUserMangeImpl
 import com.example.fintrack.data.pref.UserPreference
 import com.example.fintrack.data.remote.AuthInterceptor
@@ -37,7 +39,7 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
-    fun providerRetrofit(authInterceptor: AuthInterceptor) : Retrofit{
+    fun providerRetrofit(authInterceptor: AuthInterceptor): Retrofit {
         val loggingInterceptor =
             if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -80,19 +82,25 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepositoryImpl(fintrackApi: FintrackApi) : AuthRepository {
-        return AuthRepositoryImpl(fintrackApi)
+    fun provideAuthRepositoryImpl(
+        fintrackApi: FintrackApi,
+        userPreference: UserPreference
+    ): AuthRepository {
+        return AuthRepositoryImpl(fintrackApi, userPreference)
     }
 
     @Provides
     @Singleton
-    fun provideResendVeriyRepositoryImpl(fintrackApi: FintrackApi) : ResendVerifyRepository {
+    fun provideResendVeriyRepositoryImpl(fintrackApi: FintrackApi): ResendVerifyRepository {
         return ResendVerifyRepositoryImpl(fintrackApi)
     }
 
     @Provides
     @Singleton
-    fun provideLoginRepositoryImpl(fintrackApi: FintrackApi, userPreference: UserPreference): LoginRepository {
+    fun provideLoginRepositoryImpl(
+        fintrackApi: FintrackApi,
+        userPreference: UserPreference
+    ): LoginRepository {
         return LoginRepositoryImpl(fintrackApi, userPreference)
     }
 
@@ -104,9 +112,16 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideTransactionRepositoryImpl(fintrackApi: FintrackApi): TransactionRepository {
-        return TransactionRepositoryImpl(fintrackApi)
+    fun provideTransactionRepositoryImpl(
+        fintrackApi: FintrackApi,
+        transactionRemoteDataSource: TransactionRemoteDataSource
+    ): TransactionRepository {
+        return TransactionRepositoryImpl(fintrackApi, transactionRemoteDataSource)
     }
 
-
+    @Provides
+    @Singleton
+    fun provideTransactionRemoteDataSource(fintrackApi: FintrackApi): TransactionRemoteDataSource {
+        return TransactionRemoteDataSourceImpl(fintrackApi)
+    }
 }

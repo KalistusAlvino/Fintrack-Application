@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.fintrack.R
 import com.example.fintrack.di.model.Transaction.GetTransactionResponse
+import com.example.fintrack.ui.theme.AlertColor
 import com.example.fintrack.ui.theme.FintrackTheme
 import com.example.fintrack.ui.theme.MainColor
 
@@ -34,7 +35,8 @@ import com.example.fintrack.ui.theme.MainColor
 fun TransactionList(
     transaction: GetTransactionResponse,
     boxIconColor: Color,
-    icon: ImageVector
+    icon: ImageVector,
+    selectedTab: Int,
 ) {
     Row(
         modifier = Modifier
@@ -97,6 +99,7 @@ fun TransactionList(
             Text(
                 text = "IDR ${transaction.formattedAmount}",
                 fontFamily = FontFamily(Font(R.font.poppins_bold)),
+                color = if (selectedTab == 0) MainColor else AlertColor,
                 fontSize = 12.sp,
                 lineHeight = 16.sp
             )
@@ -128,7 +131,8 @@ private fun TransactionListPreview() {
         TransactionList(
             transaction = dummyIncome,
             boxIconColor = MainColor,
-            icon = Icons.Default.ArrowDownward
+            icon = Icons.Default.ArrowDownward,
+            selectedTab = 0
         )
     }
 }

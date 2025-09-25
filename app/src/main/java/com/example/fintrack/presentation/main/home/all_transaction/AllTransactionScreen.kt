@@ -1,12 +1,16 @@
 package com.example.fintrack.presentation.main.home.all_transaction
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -16,11 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -35,14 +42,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.fintrack.R
 import com.example.fintrack.di.model.Transaction.GetTransactionResponse
 import com.example.fintrack.presentation.main.content.TransactionList
+import com.example.fintrack.presentation.main.home.transaction.TransactionEvent
 import com.example.fintrack.presentation.main.home.transaction.TransactionViewModel
+import com.example.fintrack.ui.component.ErrorPagingItem
+import com.example.fintrack.ui.component.Loading
+import com.example.fintrack.ui.component.ShimmerEffect
 import com.example.fintrack.ui.theme.AlertColor
 import com.example.fintrack.ui.theme.BaseColor
+import com.example.fintrack.ui.theme.BlurDark
 import com.example.fintrack.ui.theme.FintrackTheme
 import com.example.fintrack.ui.theme.MainColor
 import com.example.fintrack.ui.theme.TextColor
@@ -52,11 +65,13 @@ import com.example.fintrack.ui.theme.TextColor
 @Composable
 fun AllTransactionScreen(
     navigateToMain: () -> Unit,
-    selectedTab: Int
+    selectedTab: Int,
 ) {
     val transactionViewModel: TransactionViewModel = hiltViewModel()
-    val incomesPagingItems: LazyPagingItems<GetTransactionResponse> = transactionViewModel.allIncomesState.collectAsLazyPagingItems()
-    val expensesPagingItems: LazyPagingItems<GetTransactionResponse> = transactionViewModel.allExpensesState.collectAsLazyPagingItems()
+    val incomesPagingItems: LazyPagingItems<GetTransactionResponse> =
+        transactionViewModel.allIncomesState.collectAsLazyPagingItems()
+    val expensesPagingItems: LazyPagingItems<GetTransactionResponse> =
+        transactionViewModel.allExpensesState.collectAsLazyPagingItems()
 
     Scaffold(
         topBar = {
@@ -98,15 +113,15 @@ fun AllTransactionScreen(
             )
         }
     ) { contentPadding ->
-        LazyColumn (
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(contentPadding)
                 .padding(16.dp)
         ) {
-            when(selectedTab) {
+            when (selectedTab) {
                 0 -> {
-                    items (incomesPagingItems.itemCount){ index ->
+                    items(incomesPagingItems.itemCount) { index ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -123,9 +138,61 @@ fun AllTransactionScreen(
                             )
                         }
                     }
+                    incomesPagingItems.apply {
+                        when {
+                            loadState.refresh is LoadState.Loading -> {
+                                items(10) {
+                                    ShimmerEffect(
+                                        modifier = Modifier.fillMaxWidth()
+                                            .height(95.dp)
+                                            .padding(top = 16.dp, bottom = 16.dp)
+                                            .background(
+                                                color = Color.LightGray,
+                                                shape = RoundedCornerShape(20.dp)
+                                            )
+                                    )
+                                }
+                            }
+                            loadState.refresh is LoadState.Error -> {
+                                item {
+                                    ErrorPagingItem(
+                                        message = "Failed to load incomes",
+                                        onRetry = {
+                                            incomesPagingItems.retry()
+                                        }
+                                    )
+                                }
+                            }
+                            loadState.append is LoadState.Loading -> {
+                                items(10) {
+                                    ShimmerEffect(
+                                        modifier = Modifier.fillMaxWidth()
+                                            .height(95.dp)
+                                            .padding(top = 16.dp, bottom = 16.dp)
+                                            .background(
+                                                color = Color.LightGray,
+                                                shape = RoundedCornerShape(20.dp)
+                                            )
+                                    )
+                                }
+                            }
+
+                            loadState.append is LoadState.Error -> {
+                                item {
+                                    ErrorPagingItem(
+                                        message = "Failed to load incomes",
+                                        onRetry = {
+                                            incomesPagingItems.retry()
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
+
                 1 -> {
-                    items (expensesPagingItems.itemCount){ index ->
+                    items(expensesPagingItems.itemCount) { index ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -142,19 +209,70 @@ fun AllTransactionScreen(
                             )
                         }
                     }
+                    expensesPagingItems.apply {
+                        when {
+                            loadState.refresh is LoadState.Loading -> {
+                                items(3) {
+                                    ShimmerEffect(
+                                        modifier = Modifier.fillMaxWidth()
+                                            .height(95.dp)
+                                            .padding(top = 16.dp, bottom = 16.dp)
+                                            .background(
+                                                color = Color.LightGray,
+                                                shape = RoundedCornerShape(20.dp)
+                                            )
+                                    )
+                                }
+                            }
+                            loadState.refresh is LoadState.Error -> {
+                                item {
+                                    ErrorPagingItem(
+                                        message = "Failed to load expenses",
+                                        onRetry = {
+                                            expensesPagingItems.retry()
+                                        }
+                                    )
+                                }
+                            }
+                            loadState.append is LoadState.Loading -> {
+                                items(10) {
+                                    ShimmerEffect(
+                                        modifier = Modifier.fillMaxWidth()
+                                            .height(95.dp)
+                                            .padding(top = 16.dp, bottom = 16.dp)
+                                            .background(
+                                                color = Color.LightGray,
+                                                shape = RoundedCornerShape(20.dp)
+                                            )
+                                    )
+                                }
+                            }
+
+                            loadState.append is LoadState.Error -> {
+                                item {
+                                    ErrorPagingItem(
+                                        message = "Failed to load incomes",
+                                        onRetry = {
+                                            expensesPagingItems.retry()
+                                        }
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-@Preview
-@Composable
-private fun AllTransactionPreview() {
-    FintrackTheme {
-        AllTransactionScreen(
-            navigateToMain = { },
-            selectedTab = 0
-        )
-    }
-}
+//@Preview
+//@Composable
+//private fun AllTransactionPreview() {
+//    FintrackTheme {
+//        AllTransactionScreen(
+//            navigateToMain = { },
+//            selectedTab = 0
+//        )
+//    }
+//}

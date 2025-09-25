@@ -245,26 +245,28 @@ fun HomePage(
                                 fontFamily = FontFamily(Font(R.font.poppins_bold)),
                                 fontSize = 14.sp,
                             )
-                            TextButton(
-                                onClick = {
-                                    allTransaction(selectedTab)
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    contentColor = if (selectedTab == 0) MainColor else AlertColor,
-                                    containerColor = Color.Transparent
-                                )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-                                    contentDescription = "All Transaction",
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = if (selectedTab == 0) "All incomes" else "All expenses",
-                                    fontFamily = FontFamily(Font(R.font.poppins_regular)),
-                                    fontSize = 14.sp,
-                                )
+                            if (!incomeResult.isNullOrEmpty()) {
+                                TextButton(
+                                    onClick = {
+                                        allTransaction(selectedTab)
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        contentColor = if (selectedTab == 0) MainColor else AlertColor,
+                                        containerColor = Color.Transparent
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
+                                        contentDescription = "All Transaction",
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = if (selectedTab == 0) "All incomes" else "All expenses",
+                                        fontFamily = FontFamily(Font(R.font.poppins_regular)),
+                                        fontSize = 14.sp,
+                                    )
+                                }
                             }
                         }
                         when {

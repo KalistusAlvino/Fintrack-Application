@@ -56,6 +56,7 @@ class TransactionViewModel @Inject constructor(
             MutableStateFlow(value = PagingData.empty())
     val allExpensesState: MutableStateFlow<PagingData<GetTransactionResponse>> get() = _allExpensesState
 
+    private var lastEvent: TransactionEvent? = null
 
     fun onEvent(event: TransactionEvent) {
         when (event) {
@@ -67,9 +68,11 @@ class TransactionViewModel @Inject constructor(
                 postExpenses(event.categoryId, event.amount, event.description)
             }
             is TransactionEvent.AllExpenses -> {
+                lastEvent = event
                 getAllIncomes()
             }
             is TransactionEvent.AllIncomes -> {
+                lastEvent = event
                 getAllExpenses()
             }
         }
